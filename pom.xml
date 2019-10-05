@@ -9,9 +9,9 @@
         <relativePath/> <!-- lookup parent from repository -->
     </parent>
     <groupId>com.material.light</groupId>
-    <artifactId>lm-user-service</artifactId>
+    <artifactId>user-service</artifactId>
     <version>0.0.1-SNAPSHOT</version>
-    <name>lm-user-service</name>
+    <name>user-service</name>
     <description>Light Material User Service</description>
 
     <properties>
@@ -82,7 +82,7 @@
                 <groupId>org.springframework.boot</groupId>
                 <artifactId>spring-boot-maven-plugin</artifactId>
 		<configuration>
-			<finalName>lm-user-service</finalName>
+			<finalName>user-service</finalName>
 		</configuration>
             </plugin>
         </plugins>
