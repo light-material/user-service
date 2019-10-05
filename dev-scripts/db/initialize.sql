@@ -18,6 +18,9 @@ create table user
 
 create unique index user_username_uindex
 	on user (username);
+create unique index user_email_address_uindex
+	on user (email_address);
+
 
 create table login_credentials
 (
