@@ -1,5 +1,6 @@
 package com.material.light.lmuserservice.model.contract;
 
+import com.fasterxml.jackson.annotation.JsonInclude;
 import com.material.light.lmuserservice.model.enums.ResponseEnum;
 import com.material.light.lmuserservice.model.exception.GenericException;
 import lombok.Data;
@@ -9,6 +10,7 @@ import lombok.Data;
  * 05/10/2019  7:02 PM
  */
 @Data
+@JsonInclude(JsonInclude.Include.NON_NULL)
 public class GenericResponse<T> {
     private String resultCode;
     private String resultMessage;
@@ -19,6 +21,12 @@ public class GenericResponse<T> {
         this.resultCode = exception.getResultCode();
         this.resultMessage = exception.getResultMessage();
         this.resultNamespace = exception.getResultNamespace();
+    }
+
+    public GenericResponse(ResponseEnum responseEnum) {
+        this.resultCode = responseEnum.getResultCode();
+        this.resultMessage = responseEnum.getResultMessage();
+        this.resultNamespace = responseEnum.getResultNamespace();
     }
 
     public GenericResponse(T resultValue) {
