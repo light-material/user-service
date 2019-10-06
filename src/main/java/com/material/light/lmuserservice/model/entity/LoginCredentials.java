@@ -1,5 +1,6 @@
 package com.material.light.lmuserservice.model.entity;
 
+import com.google.gson.Gson;
 import lombok.Data;
 
 import javax.persistence.*;
@@ -21,10 +22,6 @@ public class LoginCredentials {
 
     @Override
     public String toString() {
-        return "LoginCredentials{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", password='" + password + '\'' +
-                '}';
+        return new Gson().toJson(this);
     }
 }

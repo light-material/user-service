@@ -1,6 +1,7 @@
 package com.material.light.lmuserservice.model.contract;
 
 import com.fasterxml.jackson.annotation.JsonInclude;
+import com.google.gson.Gson;
 import com.material.light.lmuserservice.model.enums.ResponseEnum;
 import com.material.light.lmuserservice.model.exception.GenericException;
 import lombok.Data;
@@ -36,5 +37,10 @@ public class GenericResponse<T> {
         this.resultMessage = ResponseEnum.SUCCESS.getResultMessage();
         this.resultNamespace = ResponseEnum.SUCCESS.getResultNamespace();
         this.resultValue = resultValue;
+    }
+
+    @Override
+    public String toString() {
+        return new Gson().toJson(this);
     }
 }

@@ -1,6 +1,12 @@
 package com.material.light.lmuserservice.model.entity;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.google.gson.Gson;
+import com.material.light.lmuserservice.model.enums.AccountStatus;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
@@ -10,7 +16,11 @@ import java.time.LocalDateTime;
  * Created by djames
  * 04/10/2019  11:12 PM
  */
+
 @Data
+@Builder
+@NoArgsConstructor
+@AllArgsConstructor
 @Entity
 @Table(name = "user")
 public class User {
@@ -25,22 +35,16 @@ public class User {
     private String emailAddress;
     @CreationTimestamp
     private LocalDateTime dateCreated;
-    private String accountStatus;
+
+    @Enumerated(EnumType.STRING)
+    private AccountStatus accountStatus;
+
+    @JsonIgnore
     @Version
     private int version;
 
     @Override
     public String toString() {
-        return "User{" +
-                "id=" + id +
-                ", username='" + username + '\'' +
-                ", firstName='" + firstName + '\'' +
-                ", lastName='" + lastName + '\'' +
-                ", mobileNumber='" + mobileNumber + '\'' +
-                ", emailAddress='" + emailAddress + '\'' +
-                ", dateCreated=" + dateCreated +
-                ", accountStatus='" + accountStatus + '\'' +
-                ", version=" + version +
-                '}';
+        return new Gson().toJson(this);
     }
 }
