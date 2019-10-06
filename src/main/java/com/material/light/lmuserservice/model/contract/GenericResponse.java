@@ -4,12 +4,14 @@ import com.fasterxml.jackson.annotation.JsonInclude;
 import com.material.light.lmuserservice.model.enums.ResponseEnum;
 import com.material.light.lmuserservice.model.exception.GenericException;
 import lombok.Data;
+import lombok.NoArgsConstructor;
 
 /**
  * Created by djames
  * 05/10/2019  7:02 PM
  */
 @Data
+@NoArgsConstructor
 @JsonInclude(JsonInclude.Include.NON_NULL)
 public class GenericResponse<T> {
     private String resultCode;
