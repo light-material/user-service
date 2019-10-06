@@ -25,4 +25,9 @@ public class UserService {
         return userRepository.getUserByUsername(userName)
                 .orElseThrow(() -> new InvalidParameterException(ResponseEnum.INVALID_PARAMETER, "User record not found."));
     }
+
+    public User getUserByEmailAddress(String emailAddress) throws InvalidParameterException {
+        return userRepository.getUserByEmailAddress(emailAddress)
+                .orElseThrow(() -> new InvalidParameterException(ResponseEnum.INVALID_PARAMETER, "User record not found."));
+    }
 }
