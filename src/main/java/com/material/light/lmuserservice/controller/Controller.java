@@ -28,7 +28,7 @@ public class Controller {
         this.userService = userService;
     }
 
-    @GetMapping
+    @GetMapping(params = "username")
     public ResponseEntity<GenericResponse<User>> getUserByUserName(@RequestParam String username)
             throws InvalidParameterException {
         log.info("GetUserByUsername: {}", username);
@@ -38,7 +38,7 @@ public class Controller {
         return response;
     }
 
-    @GetMapping
+    @GetMapping(params = "email")
     public ResponseEntity<GenericResponse<User>> getUserByEmailAddress(@RequestParam String email)
             throws InvalidParameterException {
         log.info("GetUserByEmailAddress: {}", email);
