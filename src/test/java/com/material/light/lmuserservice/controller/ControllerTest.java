@@ -1,19 +1,23 @@
 package com.material.light.lmuserservice.controller;
 
-import com.material.light.lmuserservice.model.contract.GenericResponse;
-import com.material.light.lmuserservice.model.enums.ResponseEnum;
+import com.material.light.lmuserservice.model.entity.User;
+import com.material.light.lmuserservice.model.enums.AccountStatus;
+import com.material.light.lmuserservice.service.data.UserService;
+import com.material.light.lmuserservice.service.validator.ValidatorService;
 import lombok.extern.slf4j.Slf4j;
-import org.assertj.core.api.Assertions;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
+import org.mockito.ArgumentMatchers;
+import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.boot.test.context.SpringBootTest;
-import org.springframework.boot.test.web.client.TestRestTemplate;
-import org.springframework.http.HttpStatus;
-import org.springframework.http.ResponseEntity;
+import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
+import org.springframework.boot.test.mock.mockito.MockBean;
 import org.springframework.test.context.junit4.SpringRunner;
-
-import java.util.Map;
+import org.springframework.test.context.web.WebAppConfiguration;
+import org.springframework.test.web.servlet.MockMvc;
+import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 /**
  * Created by djames
@@ -21,50 +25,67 @@ import java.util.Map;
  */
 @Slf4j
 @RunWith(SpringRunner.class)
-@SpringBootTest(webEnvironment = SpringBootTest.WebEnvironment.RANDOM_PORT)
+@WebMvcTest(Controller.class)
+@WebAppConfiguration
 class ControllerTest {
 
     @Autowired
-    private TestRestTemplate testRestTemplate;
+    private MockMvc mockMvc;
+
+    @MockBean
+    private UserService userService;
+
+    @MockBean
+    @Qualifier("addUser")
+    private ValidatorService validatorService;
 
     @Test
-    void getUserByUserName() {
+    public void getUserByUserName() throws Exception {
         log.info("Testing GetUserByUserName...");
-        ResponseEntity<GenericResponse> response = testRestTemplate.getForEntity("/v1/user?username=gon_frix", GenericResponse.class);
-        log.info("GetUserByUsername Test Response: {}", response);
 
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(response.getBody()).isNotNull();
-        Assertions.assertThat(response.getBody().getResultCode()).isEqualTo(ResponseEnum.SUCCESS.getResultCode());
-        Assertions.assertThat(response.getBody().getResultMessage()).isEqualTo(ResponseEnum.SUCCESS.getResultMessage());
-        Assertions.assertThat(response.getBody().getResultNamespace()).isEqualTo(ResponseEnum.SUCCESS.getResultNamespace());
-        Assertions.assertThat(response.getBody().getResultValue()).isNotNull();
+        User user = User.builder()
+                .username("gon_frix")
+                .firstName("Gon")
+                .lastName("Frix")
+                .mobileNumber("09279124037")
+                .emailAddress("gon_frix@gmail.com")
+                .accountStatus(AccountStatus.ACTIVE)
+                .build();
 
-        Map<String, String> user = (Map<String, String>) response.getBody().getResultValue();
-        Assertions.assertThat(user.get("username")).isEqualToIgnoringCase("gon_frix");
-        Assertions.assertThat(user.get("firstName")).isEqualToIgnoringCase("Gon");
-        Assertions.assertThat(user.get("lastName")).isEqualToIgnoringCase("Frix");
-        Assertions.assertThat(user.get("accountStatus")).isEqualToIgnoringCase("ACTIVE");
+        BDDMockito.given(userService.getUserByUserName(ArgumentMatchers.anyString())).willReturn(user);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/v1/user?username=gon_frix"))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.username").value("gon_frix"))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.firstName").value("Gon"))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.lastName").value("Frix"))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.mobileNumber").value("09279124037"))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.emailAddress").value("gon_frix@gmail.com"))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.accountStatus").value("ACTIVE"));
     }
 
     @Test
-    void getUserByEmailAddress() {
-        log.info("Testing GetUserByEmailAddress...");
-        ResponseEntity<GenericResponse> response = testRestTemplate.getForEntity("/v1/user?email=killua.zoldyck@gmail.com", GenericResponse.class);
-        log.info("GetUserByEmailAddress Test Response: {}", response);
+    public void getUserByEmailAddress() throws Exception {
+        log.info("Testing getUserByEmailAddress...");
 
-        Assertions.assertThat(response.getStatusCode()).isEqualTo(HttpStatus.OK);
-        Assertions.assertThat(response.getBody()).isNotNull();
-        Assertions.assertThat(response.getBody().getResultCode()).isEqualTo(ResponseEnum.SUCCESS.getResultCode());
-        Assertions.assertThat(response.getBody().getResultMessage()).isEqualTo(ResponseEnum.SUCCESS.getResultMessage());
-        Assertions.assertThat(response.getBody().getResultNamespace()).isEqualTo(ResponseEnum.SUCCESS.getResultNamespace());
-        Assertions.assertThat(response.getBody().getResultValue()).isNotNull();
+        User user = User.builder()
+                .username("gon_frix")
+                .firstName("Gon")
+                .lastName("Frix")
+                .mobileNumber("09279124037")
+                .emailAddress("gon_frix@gmail.com")
+                .accountStatus(AccountStatus.ACTIVE)
+                .build();
 
-        Map<String, String> user = (Map<String, String>) response.getBody().getResultValue();
-        Assertions.assertThat(user.get("emailAddress")).isEqualToIgnoringCase("killua.zoldyck@gmail.com");
-        Assertions.assertThat(user.get("username")).isEqualToIgnoringCase("kill_zold");
-        Assertions.assertThat(user.get("firstName")).isEqualToIgnoringCase("Killua");
-        Assertions.assertThat(user.get("lastName")).isEqualToIgnoringCase("Zoldyck");
-        Assertions.assertThat(user.get("accountStatus")).isEqualToIgnoringCase("ACTIVE");
+        BDDMockito.given(userService.getUserByEmailAddress(ArgumentMatchers.anyString())).willReturn(user);
+
+        mockMvc.perform(MockMvcRequestBuilders.get("/v1/user?email=gon_frix@gmail.com"))
+                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.username").value("gon_frix"))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.firstName").value("Gon"))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.lastName").value("Frix"))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.mobileNumber").value("09279124037"))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.emailAddress").value("gon_frix@gmail.com"))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.accountStatus").value("ACTIVE"));
     }
 }
