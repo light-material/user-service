@@ -1,6 +1,7 @@
 package com.material.light.lmuserservice.service.data;
 
 import com.material.light.lmuserservice.model.entity.User;
+import com.material.light.lmuserservice.model.enums.AccountStatus;
 import com.material.light.lmuserservice.model.enums.ResponseEnum;
 import com.material.light.lmuserservice.model.exception.DuplicateEntryException;
 import com.material.light.lmuserservice.model.exception.GenericException;
@@ -9,7 +10,11 @@ import com.material.light.lmuserservice.repository.UserRepository;
 import com.material.light.lmuserservice.service.validator.ValidatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Created by djames
@@ -25,6 +30,11 @@ public class UserService {
     public UserService(@Qualifier("addUser") ValidatorService validatorService, UserRepository userRepository) {
         this.validatorService = validatorService;
         this.userRepository = userRepository;
+    }
+
+    public List<User> getActiveUsers(int limit) {
+        Pageable pageRequest = PageRequest.of(0, limit);
+        return userRepository.findByAccountStatusOrderByDateCreatedDesc(AccountStatus.ACTIVE, pageRequest);
     }
 
     public User getUserByUserName(String userName) throws InvalidParameterException {
@@ -49,6 +59,8 @@ public class UserService {
         User record = userRepository.findById(id)
                 .orElseThrow(() -> new InvalidParameterException(ResponseEnum.INVALID_PARAMETER, "User record not found."));
         user.setId(record.getId());
+        user.setDateCreated(record.getDateCreated());
+        user.setVersion(record.getVersion());
         return userRepository.save(user);
     }
 }

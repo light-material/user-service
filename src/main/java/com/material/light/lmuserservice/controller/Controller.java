@@ -10,6 +10,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
+import java.util.List;
+
 /**
  * Created by djames
  * 01/10/2019  1:09 PM
@@ -24,6 +26,17 @@ public class Controller {
     @Autowired
     public Controller(UserService userService) {
         this.userService = userService;
+    }
+
+    @GetMapping
+    public ResponseEntity<GenericResponse<List<User>>> getActiveUsers(@RequestParam(value = "limit", required = false) Integer limit) {
+        int max = limit != null ? limit : 10;
+        log.info("GetActiveUsers : {}", max);
+        List<User> users = userService.getActiveUsers(max);
+        ResponseEntity<GenericResponse<List<User>>> response = ResponseEntity.ok(new GenericResponse<>(users));
+        log.info("GetActiveUsers: {}", response);
+        return response;
+
     }
 
     @GetMapping(params = "username")
