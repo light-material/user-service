@@ -1,2 +1,2 @@
-# lm-user-service
+# user-service
 Light Material User Service
