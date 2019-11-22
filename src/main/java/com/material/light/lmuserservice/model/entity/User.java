@@ -10,6 +10,10 @@ import lombok.NoArgsConstructor;
 import org.hibernate.annotations.CreationTimestamp;
 
 import javax.persistence.*;
+import javax.validation.constraints.Email;
+import javax.validation.constraints.NotBlank;
+import javax.validation.constraints.Pattern;
+import javax.validation.constraints.Size;
 import java.time.LocalDateTime;
 
 /**
@@ -28,16 +32,33 @@ public class User {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private long id;
+
+    @NotBlank
+    @Size(max = 64)
     private String username;
+
+    @NotBlank
+    @Size(max = 64)
     private String firstName;
+
+    @NotBlank
+    @Size(max = 64)
     private String lastName;
+
+    @NotBlank
+    @Pattern(regexp = "^09\\d{9}")
     private String mobileNumber;
+
+    @NotBlank
+    @Size(max = 64)
+    @Email
     private String emailAddress;
+
     @CreationTimestamp
     private LocalDateTime dateCreated;
 
     @Enumerated(EnumType.STRING)
-    private AccountStatus accountStatus;
+    private AccountStatus accountStatus = AccountStatus.ACTIVE;
 
     @JsonIgnore
     @Version

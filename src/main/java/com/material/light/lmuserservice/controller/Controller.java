@@ -1,6 +1,5 @@
 package com.material.light.lmuserservice.controller;
 
-import com.material.light.lmuserservice.model.contract.AddUser;
 import com.material.light.lmuserservice.model.contract.GenericResponse;
 import com.material.light.lmuserservice.model.entity.User;
 import com.material.light.lmuserservice.model.exception.GenericException;
@@ -48,7 +47,7 @@ public class Controller {
     }
 
     @PostMapping
-    public ResponseEntity<GenericResponse<User>> addUser(@RequestBody AddUser.Request request) throws GenericException {
+    public ResponseEntity<GenericResponse<User>> addUser(@RequestBody User request) throws GenericException {
         log.info("Add User Request: {}", request);
         User user = userService.addUser(request);
         ResponseEntity<GenericResponse<User>> response = ResponseEntity.ok(new GenericResponse<>(user));

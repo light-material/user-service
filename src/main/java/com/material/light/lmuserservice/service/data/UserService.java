@@ -1,8 +1,6 @@
 package com.material.light.lmuserservice.service.data;
 
-import com.material.light.lmuserservice.model.contract.AddUser;
 import com.material.light.lmuserservice.model.entity.User;
-import com.material.light.lmuserservice.model.enums.AccountStatus;
 import com.material.light.lmuserservice.model.enums.ResponseEnum;
 import com.material.light.lmuserservice.model.exception.DuplicateEntryException;
 import com.material.light.lmuserservice.model.exception.GenericException;
@@ -39,19 +37,19 @@ public class UserService {
                 .orElseThrow(() -> new InvalidParameterException(ResponseEnum.INVALID_PARAMETER, "User record not found."));
     }
 
-    public User addUser(AddUser.Request request) throws GenericException {
-        validatorService.validate(request);
-        if (userRepository.getUserByUsernameOrEmailAddress(request.getUsername(), request.getEmailAddress()).isPresent())
+    public User addUser(User user) throws GenericException {
+        validatorService.validate(user);
+        if (userRepository.getUserByUsernameOrEmailAddress(user.getUsername(), user.getEmailAddress()).isPresent())
             throw new DuplicateEntryException(ResponseEnum.DUPLICATE_ENTRY);
 
-        User user = User.builder()
-                .username(request.getUsername())
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .mobileNumber(request.getMobileNumber())
-                .emailAddress(request.getEmailAddress())
-                .accountStatus(AccountStatus.ACTIVE)
-                .build();
+//        User user = User.builder()
+//                .username(request.getUsername())
+//                .firstName(request.getFirstName())
+//                .lastName(request.getLastName())
+//                .mobileNumber(request.getMobileNumber())
+//                .emailAddress(request.getEmailAddress())
+//                .accountStatus(AccountStatus.ACTIVE)
+//                .build();
         return userRepository.save(user);
     }
 }
