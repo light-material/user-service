@@ -1,22 +1,24 @@
 package com.material.light.lmuserservice.controller;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.material.light.lmuserservice.model.contract.AddUser;
 import com.material.light.lmuserservice.model.entity.User;
 import com.material.light.lmuserservice.model.enums.AccountStatus;
 import com.material.light.lmuserservice.service.data.UserService;
-import com.material.light.lmuserservice.service.validator.ValidatorService;
 import lombok.extern.slf4j.Slf4j;
 import org.junit.jupiter.api.Test;
 import org.junit.runner.RunWith;
 import org.mockito.ArgumentMatchers;
 import org.mockito.BDDMockito;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.boot.test.autoconfigure.web.servlet.WebMvcTest;
 import org.springframework.boot.test.mock.mockito.MockBean;
+import org.springframework.http.MediaType;
 import org.springframework.test.context.junit4.SpringRunner;
 import org.springframework.test.context.web.WebAppConfiguration;
 import org.springframework.test.web.servlet.MockMvc;
 import org.springframework.test.web.servlet.request.MockMvcRequestBuilders;
+import org.springframework.test.web.servlet.result.MockMvcResultHandlers;
 import org.springframework.test.web.servlet.result.MockMvcResultMatchers;
 
 /**
@@ -32,12 +34,11 @@ class ControllerTest {
     @Autowired
     private MockMvc mockMvc;
 
-    @MockBean
-    private UserService userService;
+    @Autowired
+    private ObjectMapper objectMapper;
 
     @MockBean
-    @Qualifier("addUser")
-    private ValidatorService validatorService;
+    private UserService userService;
 
     @Test
     public void getUserByUserName() throws Exception {
@@ -55,7 +56,7 @@ class ControllerTest {
         BDDMockito.given(userService.getUserByUserName(ArgumentMatchers.anyString())).willReturn(user);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/user?username=gon_frix"))
-                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("resultValue.username").value("gon_frix"))
                 .andExpect(MockMvcResultMatchers.jsonPath("resultValue.firstName").value("Gon"))
                 .andExpect(MockMvcResultMatchers.jsonPath("resultValue.lastName").value("Frix"))
@@ -80,12 +81,49 @@ class ControllerTest {
         BDDMockito.given(userService.getUserByEmailAddress(ArgumentMatchers.anyString())).willReturn(user);
 
         mockMvc.perform(MockMvcRequestBuilders.get("/v1/user?email=gon_frix@gmail.com"))
-                .andExpect(MockMvcResultMatchers.status().is2xxSuccessful())
+                .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("resultValue.username").value("gon_frix"))
                 .andExpect(MockMvcResultMatchers.jsonPath("resultValue.firstName").value("Gon"))
                 .andExpect(MockMvcResultMatchers.jsonPath("resultValue.lastName").value("Frix"))
                 .andExpect(MockMvcResultMatchers.jsonPath("resultValue.mobileNumber").value("09279124037"))
                 .andExpect(MockMvcResultMatchers.jsonPath("resultValue.emailAddress").value("gon_frix@gmail.com"))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.accountStatus").value("ACTIVE"));
+    }
+
+    @Test
+    public void addUser() throws Exception {
+        log.info("Testing addUser...");
+
+        AddUser.Request request = AddUser.Request.builder()
+                .username("user001")
+                .firstName("DJames")
+                .lastName("Castillo")
+                .mobileNumber("09275525454")
+                .emailAddress("djames@gmail.com")
+                .build();
+
+        User user = User.builder()
+                .username("user001")
+                .firstName("DJames")
+                .lastName("Castillo")
+                .mobileNumber("09275525454")
+                .emailAddress("djames@gmail.com")
+                .accountStatus(AccountStatus.ACTIVE)
+                .build();
+        BDDMockito.given(userService.addUser(ArgumentMatchers.any())).willReturn(user);
+
+        mockMvc.perform(MockMvcRequestBuilders.post("/v1/user")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(request)))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("resultCode").value("SUCCESS"))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultMessage").value("Success."))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.username").value("user001"))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.firstName").value("DJames"))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.lastName").value("Castillo"))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.mobileNumber").value("09275525454"))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.emailAddress").value("djames@gmail.com"))
                 .andExpect(MockMvcResultMatchers.jsonPath("resultValue.accountStatus").value("ACTIVE"));
     }
 }

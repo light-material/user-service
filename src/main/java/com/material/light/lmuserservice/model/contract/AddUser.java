@@ -1,7 +1,7 @@
 package com.material.light.lmuserservice.model.contract;
 
-import lombok.Data;
-import lombok.EqualsAndHashCode;
+import com.google.gson.Gson;
+import lombok.*;
 
 import javax.validation.constraints.Email;
 import javax.validation.constraints.NotBlank;
@@ -15,6 +15,9 @@ import javax.validation.constraints.Size;
 public interface AddUser {
 
     @EqualsAndHashCode(callSuper = true)
+    @Builder
+    @NoArgsConstructor
+    @AllArgsConstructor
     @Data
     class Request extends BaseRequest {
         @NotBlank
@@ -37,5 +40,10 @@ public interface AddUser {
         @Size(max = 64)
         @Email
         private String emailAddress;
+
+        @Override
+        public String toString() {
+            return new Gson().toJson(this);
+        }
     }
 }

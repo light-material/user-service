@@ -6,10 +6,8 @@ import com.material.light.lmuserservice.model.entity.User;
 import com.material.light.lmuserservice.model.exception.GenericException;
 import com.material.light.lmuserservice.model.exception.InvalidParameterException;
 import com.material.light.lmuserservice.service.data.UserService;
-import com.material.light.lmuserservice.service.validator.ValidatorService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -23,12 +21,10 @@ import org.springframework.web.bind.annotation.*;
 public class Controller {
 
     private UserService userService;
-    private ValidatorService validatorService;
 
     @Autowired
-    public Controller(UserService userService, @Qualifier("addUser") ValidatorService validatorService) {
+    public Controller(UserService userService) {
         this.userService = userService;
-        this.validatorService = validatorService;
     }
 
     @GetMapping(params = "username")
@@ -54,7 +50,6 @@ public class Controller {
     @PostMapping
     public ResponseEntity<GenericResponse<User>> addUser(@RequestBody AddUser.Request request) throws GenericException {
         log.info("Add User Request: {}", request);
-        validatorService.validate(request);
         User user = userService.addUser(request);
         ResponseEntity<GenericResponse<User>> response = ResponseEntity.ok(new GenericResponse<>(user));
         log.info("AddUser Response: {}", response);

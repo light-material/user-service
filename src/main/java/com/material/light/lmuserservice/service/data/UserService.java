@@ -5,9 +5,12 @@ import com.material.light.lmuserservice.model.entity.User;
 import com.material.light.lmuserservice.model.enums.AccountStatus;
 import com.material.light.lmuserservice.model.enums.ResponseEnum;
 import com.material.light.lmuserservice.model.exception.DuplicateEntryException;
+import com.material.light.lmuserservice.model.exception.GenericException;
 import com.material.light.lmuserservice.model.exception.InvalidParameterException;
 import com.material.light.lmuserservice.repository.UserRepository;
+import com.material.light.lmuserservice.service.validator.ValidatorService;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 /**
@@ -17,10 +20,12 @@ import org.springframework.stereotype.Service;
 @Service
 public class UserService {
 
+    private ValidatorService validatorService;
     private UserRepository userRepository;
 
     @Autowired
-    public UserService(UserRepository userRepository) {
+    public UserService(@Qualifier("addUser") ValidatorService validatorService, UserRepository userRepository) {
+        this.validatorService = validatorService;
         this.userRepository = userRepository;
     }
 
@@ -34,7 +39,8 @@ public class UserService {
                 .orElseThrow(() -> new InvalidParameterException(ResponseEnum.INVALID_PARAMETER, "User record not found."));
     }
 
-    public User addUser(AddUser.Request request) throws DuplicateEntryException {
+    public User addUser(AddUser.Request request) throws GenericException {
+        validatorService.validate(request);
         if (userRepository.getUserByUsernameOrEmailAddress(request.getUsername(), request.getEmailAddress()).isPresent())
             throw new DuplicateEntryException(ResponseEnum.DUPLICATE_ENTRY);
 

@@ -11,7 +11,7 @@ import lombok.Getter;
 @AllArgsConstructor
 public enum ResponseEnum {
 
-    SUCCESS(200, "SUCCES", "Success.", "user-service"),
+    SUCCESS(200, "SUCCESS", "Success.", "user-service"),
     INVALID_PARAMETER(400, "INVALID_PARAMETER", "Invalid request parameters.", "user-service"),
     DUPLICATE_ENTRY(400, "DUPLICATE_ENTRY", "Username / Email Address is already existing.", "user-service"),
     UNKNOWN_EXCEPTION(500, "UNKNOWN_EXCEPTION", "API failed due to unknown reason.", "user-service");
