@@ -48,10 +48,20 @@ public class Controller {
 
     @PostMapping
     public ResponseEntity<GenericResponse<User>> addUser(@RequestBody User request) throws GenericException {
-        log.info("Add User Request: {}", request);
+        log.info("AddUser Request: {}", request);
         User user = userService.addUser(request);
         ResponseEntity<GenericResponse<User>> response = ResponseEntity.ok(new GenericResponse<>(user));
         log.info("AddUser Response: {}", response);
+        return response;
+    }
+
+    @PutMapping(value = "/{id}")
+    public ResponseEntity<GenericResponse<User>> updateUser(@PathVariable long id,
+                                                            @RequestBody User request) throws GenericException {
+        log.info("UpdateUser[{}] Request: {}", id, request);
+        User user = userService.updateUser(id, request);
+        ResponseEntity<GenericResponse<User>> response = ResponseEntity.ok(new GenericResponse<>(user));
+        log.info("UpdateUser Response: {}", response);
         return response;
     }
 }

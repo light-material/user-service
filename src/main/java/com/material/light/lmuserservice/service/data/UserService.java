@@ -43,4 +43,12 @@ public class UserService {
             throw new DuplicateEntryException(ResponseEnum.DUPLICATE_ENTRY);
         return userRepository.save(user);
     }
+
+    public User updateUser(long id, User user) throws GenericException {
+        validatorService.validate(user);
+        User record = userRepository.findById(id)
+                .orElseThrow(() -> new InvalidParameterException(ResponseEnum.INVALID_PARAMETER, "User record not found."));
+        user.setId(record.getId());
+        return userRepository.save(user);
+    }
 }
