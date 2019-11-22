@@ -28,28 +28,19 @@ public class UserService {
     }
 
     public User getUserByUserName(String userName) throws InvalidParameterException {
-        return userRepository.getUserByUsername(userName)
+        return userRepository.findByUsername(userName)
                 .orElseThrow(() -> new InvalidParameterException(ResponseEnum.INVALID_PARAMETER, "User record not found."));
     }
 
     public User getUserByEmailAddress(String emailAddress) throws InvalidParameterException {
-        return userRepository.getUserByEmailAddress(emailAddress)
+        return userRepository.findByEmailAddress(emailAddress)
                 .orElseThrow(() -> new InvalidParameterException(ResponseEnum.INVALID_PARAMETER, "User record not found."));
     }
 
     public User addUser(User user) throws GenericException {
         validatorService.validate(user);
-        if (userRepository.getUserByUsernameOrEmailAddress(user.getUsername(), user.getEmailAddress()).isPresent())
+        if (userRepository.findByUsernameOrEmailAddress(user.getUsername(), user.getEmailAddress()).isPresent())
             throw new DuplicateEntryException(ResponseEnum.DUPLICATE_ENTRY);
-
-//        User user = User.builder()
-//                .username(request.getUsername())
-//                .firstName(request.getFirstName())
-//                .lastName(request.getLastName())
-//                .mobileNumber(request.getMobileNumber())
-//                .emailAddress(request.getEmailAddress())
-//                .accountStatus(AccountStatus.ACTIVE)
-//                .build();
         return userRepository.save(user);
     }
 }
