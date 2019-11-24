@@ -1,6 +1,5 @@
 package com.material.light.lmuserservice.service.data;
 
-import com.material.light.lmuserservice.model.contract.AddUser;
 import com.material.light.lmuserservice.model.entity.User;
 import com.material.light.lmuserservice.model.enums.AccountStatus;
 import com.material.light.lmuserservice.model.enums.ResponseEnum;
@@ -11,7 +10,11 @@ import com.material.light.lmuserservice.repository.UserRepository;
 import com.material.light.lmuserservice.service.validator.ValidatorService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.beans.factory.annotation.Qualifier;
+import org.springframework.data.domain.PageRequest;
+import org.springframework.data.domain.Pageable;
 import org.springframework.stereotype.Service;
+
+import java.util.List;
 
 /**
  * Created by djames
@@ -29,29 +32,35 @@ public class UserService {
         this.userRepository = userRepository;
     }
 
+    public List<User> getActiveUsers(int limit) {
+        Pageable pageRequest = PageRequest.of(0, limit);
+        return userRepository.findByAccountStatusOrderByDateCreatedDesc(AccountStatus.ACTIVE, pageRequest);
+    }
+
     public User getUserByUserName(String userName) throws InvalidParameterException {
-        return userRepository.getUserByUsername(userName)
+        return userRepository.findByUsername(userName)
                 .orElseThrow(() -> new InvalidParameterException(ResponseEnum.INVALID_PARAMETER, "User record not found."));
     }
 
     public User getUserByEmailAddress(String emailAddress) throws InvalidParameterException {
-        return userRepository.getUserByEmailAddress(emailAddress)
+        return userRepository.findByEmailAddress(emailAddress)
                 .orElseThrow(() -> new InvalidParameterException(ResponseEnum.INVALID_PARAMETER, "User record not found."));
     }
 
-    public User addUser(AddUser.Request request) throws GenericException {
-        validatorService.validate(request);
-        if (userRepository.getUserByUsernameOrEmailAddress(request.getUsername(), request.getEmailAddress()).isPresent())
+    public User addUser(User user) throws GenericException {
+        validatorService.validate(user);
+        if (userRepository.findByUsernameOrEmailAddress(user.getUsername(), user.getEmailAddress()).isPresent())
             throw new DuplicateEntryException(ResponseEnum.DUPLICATE_ENTRY);
+        return userRepository.save(user);
+    }
 
-        User user = User.builder()
-                .username(request.getUsername())
-                .firstName(request.getFirstName())
-                .lastName(request.getLastName())
-                .mobileNumber(request.getMobileNumber())
-                .emailAddress(request.getEmailAddress())
-                .accountStatus(AccountStatus.ACTIVE)
-                .build();
+    public User updateUser(long id, User user) throws GenericException {
+        validatorService.validate(user);
+        User record = userRepository.findById(id)
+                .orElseThrow(() -> new InvalidParameterException(ResponseEnum.INVALID_PARAMETER, "User record not found."));
+        user.setId(record.getId());
+        user.setDateCreated(record.getDateCreated());
+        user.setVersion(record.getVersion());
         return userRepository.save(user);
     }
 }

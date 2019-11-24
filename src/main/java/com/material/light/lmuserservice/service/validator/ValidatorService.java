@@ -1,6 +1,5 @@
 package com.material.light.lmuserservice.service.validator;
 
-import com.material.light.lmuserservice.model.contract.BaseRequest;
 import com.material.light.lmuserservice.model.enums.ResponseEnum;
 import com.material.light.lmuserservice.model.exception.GenericException;
 import com.material.light.lmuserservice.model.exception.InvalidParameterException;
@@ -16,14 +15,14 @@ import java.util.Set;
  */
 public interface ValidatorService {
 
-    void validate(BaseRequest baseRequest) throws GenericException;
+    void validate(Object o) throws GenericException;
 
-    default void beanValidate(BaseRequest baseRequest) throws InvalidParameterException {
+    default void beanValidate(Object o) throws InvalidParameterException {
         Validator validator = Validation.buildDefaultValidatorFactory().getValidator();
-        Set<ConstraintViolation<BaseRequest>> constraintViolations = validator.validate(baseRequest);
+        Set<ConstraintViolation<Object>> constraintViolations = validator.validate(o);
 
         if (!constraintViolations.isEmpty()) {
-            ConstraintViolation<BaseRequest> violation = constraintViolations.iterator().next();
+            ConstraintViolation<Object> violation = constraintViolations.iterator().next();
             String constraintViolationMessage = String.format("Invalid value[%s] for %s",
                     violation.getInvalidValue(), violation.getPropertyPath());
             throw new InvalidParameterException(ResponseEnum.INVALID_PARAMETER, constraintViolationMessage);

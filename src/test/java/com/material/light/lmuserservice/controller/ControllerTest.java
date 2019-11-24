@@ -1,7 +1,6 @@
 package com.material.light.lmuserservice.controller;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import com.material.light.lmuserservice.model.contract.AddUser;
 import com.material.light.lmuserservice.model.entity.User;
 import com.material.light.lmuserservice.model.enums.AccountStatus;
 import com.material.light.lmuserservice.service.data.UserService;
@@ -94,14 +93,6 @@ class ControllerTest {
     public void addUser() throws Exception {
         log.info("Testing addUser...");
 
-        AddUser.Request request = AddUser.Request.builder()
-                .username("user001")
-                .firstName("DJames")
-                .lastName("Castillo")
-                .mobileNumber("09275525454")
-                .emailAddress("djames@gmail.com")
-                .build();
-
         User user = User.builder()
                 .username("user001")
                 .firstName("DJames")
@@ -114,7 +105,36 @@ class ControllerTest {
 
         mockMvc.perform(MockMvcRequestBuilders.post("/v1/user")
                 .contentType(MediaType.APPLICATION_JSON_VALUE)
-                .content(objectMapper.writeValueAsString(request)))
+                .content(objectMapper.writeValueAsString(user)))
+                .andDo(MockMvcResultHandlers.print())
+                .andExpect(MockMvcResultMatchers.status().isOk())
+                .andExpect(MockMvcResultMatchers.jsonPath("resultCode").value("SUCCESS"))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultMessage").value("Success."))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.username").value("user001"))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.firstName").value("DJames"))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.lastName").value("Castillo"))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.mobileNumber").value("09275525454"))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.emailAddress").value("djames@gmail.com"))
+                .andExpect(MockMvcResultMatchers.jsonPath("resultValue.accountStatus").value("ACTIVE"));
+    }
+
+    @Test
+    public void updateUser() throws Exception {
+        log.info("Testing updateUser...");
+
+        User user = User.builder()
+                .username("user001")
+                .firstName("DJames")
+                .lastName("Castillo")
+                .mobileNumber("09275525454")
+                .emailAddress("djames@gmail.com")
+                .accountStatus(AccountStatus.ACTIVE)
+                .build();
+        BDDMockito.given(userService.updateUser(ArgumentMatchers.anyLong(), ArgumentMatchers.any())).willReturn(user);
+
+        mockMvc.perform(MockMvcRequestBuilders.put("/v1/user/1")
+                .contentType(MediaType.APPLICATION_JSON_VALUE)
+                .content(objectMapper.writeValueAsString(user)))
                 .andDo(MockMvcResultHandlers.print())
                 .andExpect(MockMvcResultMatchers.status().isOk())
                 .andExpect(MockMvcResultMatchers.jsonPath("resultCode").value("SUCCESS"))

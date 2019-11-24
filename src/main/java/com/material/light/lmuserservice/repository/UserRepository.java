@@ -1,9 +1,12 @@
 package com.material.light.lmuserservice.repository;
 
 import com.material.light.lmuserservice.model.entity.User;
+import com.material.light.lmuserservice.model.enums.AccountStatus;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
+import java.util.List;
 import java.util.Optional;
 
 /**
@@ -13,9 +16,11 @@ import java.util.Optional;
 @Repository
 public interface UserRepository extends JpaRepository<User, Long> {
 
-    Optional<User> getUserByUsername(String userName);
+    Optional<User> findByUsername(String userName);
 
-    Optional<User> getUserByEmailAddress(String emailAddress);
+    Optional<User> findByEmailAddress(String emailAddress);
 
-    Optional<User> getUserByUsernameOrEmailAddress(String username, String emailAddress);
+    Optional<User> findByUsernameOrEmailAddress(String username, String emailAddress);
+
+    List<User> findByAccountStatusOrderByDateCreatedDesc(AccountStatus accountStatus, Pageable pageable);
 }

@@ -1,8 +1,8 @@
-package com.material.light.lmuserservice.service.validator;
+package com.material.light.lmuserservice.service.validator.impl;
 
-import com.material.light.lmuserservice.model.contract.AddUser;
-import com.material.light.lmuserservice.model.contract.BaseRequest;
+import com.material.light.lmuserservice.model.entity.User;
 import com.material.light.lmuserservice.model.exception.GenericException;
+import com.material.light.lmuserservice.service.validator.ValidatorService;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -15,8 +15,8 @@ import org.springframework.stereotype.Service;
 public class AddUserImpl implements ValidatorService {
 
     @Override
-    public void validate(BaseRequest baseRequest) throws GenericException {
-        AddUser.Request request = (AddUser.Request) baseRequest;
+    public void validate(Object o) throws GenericException {
+        User request = (User) o;
         beanValidate(request);
     }
 }
