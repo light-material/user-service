@@ -1,9 +1,11 @@
 package com.material.light.lmuserservice.controller;
 
 import com.material.light.lmuserservice.model.contract.GenericResponse;
+import com.material.light.lmuserservice.model.entity.LoginCredentials;
 import com.material.light.lmuserservice.model.entity.User;
 import com.material.light.lmuserservice.model.exception.GenericException;
 import com.material.light.lmuserservice.model.exception.InvalidParameterException;
+import com.material.light.lmuserservice.service.data.LoginCredentialsService;
 import com.material.light.lmuserservice.service.data.UserService;
 import lombok.extern.slf4j.Slf4j;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -22,10 +24,12 @@ import java.util.List;
 public class Controller {
 
     private UserService userService;
+    private LoginCredentialsService loginCredentialsService;
 
     @Autowired
-    public Controller(UserService userService) {
+    public Controller(UserService userService, LoginCredentialsService loginCredentialsService) {
         this.userService = userService;
+        this.loginCredentialsService = loginCredentialsService;
     }
 
     @GetMapping
@@ -58,6 +62,16 @@ public class Controller {
         log.info("GetUserByEmailAddress Response: {}", response);
         return response;
     }
+    
+    public ResponseEntity<GenericResponse<LoginCredentials>> getLoginCredsByUserName(@RequestParam String userName)
+    		throws InvalidParameterException{
+		
+    	log.info("GetLoginCredsByUserName {}", userName);
+    	LoginCredentials loginCreds = loginCredentialsService.getLoginCredsByUserName(userName);
+    	ResponseEntity<GenericResponse<LoginCredentials>> response = ResponseEntity.ok(new GenericResponse<>(loginCreds));
+    	log.info("GetLoginCredsByUserName Response {}", response);
+    	return response;
+    }
 
     @PostMapping
     public ResponseEntity<GenericResponse<User>> addUser(@RequestBody User request) throws GenericException {
@@ -69,7 +83,7 @@ public class Controller {
     }
 
     @PutMapping(value = "/{id}")
-    public ResponseEntity<GenericResponse<User>> updateUser(@PathVariable long id,
+	public ResponseEntity<GenericResponse<User>> updateUser(@PathVariable long id,
                                                             @RequestBody User request) throws GenericException {
         log.info("UpdateUser[{}] Request: {}", id, request);
         User user = userService.updateUser(id, request);
@@ -77,4 +91,23 @@ public class Controller {
         log.info("UpdateUser Response: {}", response);
         return response;
     }
+    
+    @PostMapping
+    public ResponseEntity<GenericResponse<LoginCredentials>> addLoginCreds(@RequestBody LoginCredentials request) throws GenericException{
+    	log.info("AddLoginCreds Request: {}", request);
+    	LoginCredentials loginCreds = loginCredentialsService.addLoginCreds(request);
+    	ResponseEntity<GenericResponse<LoginCredentials>> response = ResponseEntity.ok(new GenericResponse<>(loginCreds));
+    	log.info("AddLoginCreds Response: {}", response);
+    	return response;
+    }
+    
+	@PutMapping(value = "/{id}")
+	public ResponseEntity<GenericResponse<LoginCredentials>> updateLoginCreds(@PathVariable long id,
+			@RequestBody LoginCredentials request) throws GenericException {
+		log.info("UpdateLoginCreds[{}] Request: {}", id, request);
+		LoginCredentials loginCreds = loginCredentialsService.updateLoginCreds(id, request);
+		ResponseEntity<GenericResponse<LoginCredentials>> response = ResponseEntity.ok(new GenericResponse<>(loginCreds));
+		log.info("UpdateLoginCreds Response: {}", response);
+		return response;
+	}
 }

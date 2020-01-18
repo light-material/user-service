@@ -1,6 +1,9 @@
 package com.material.light.lmuserservice.repository;
 
 import com.material.light.lmuserservice.model.entity.LoginCredentials;
+
+import java.util.Optional;
+
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -10,4 +13,6 @@ import org.springframework.stereotype.Repository;
  */
 @Repository
 public interface LoginCredentialsRepository extends JpaRepository<LoginCredentials, Long> {
+	
+	Optional<LoginCredentials> findByUserName(String userName);
 }
